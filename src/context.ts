@@ -69,7 +69,7 @@ export async function getInputs(defaultContext: string): Promise<Inputs> {
   return {
     addHosts: await getInputList('add-hosts'),
     allow: await getInputList('allow'),
-    buildArgs: await getInputList('build-args', true),
+    buildArgs: getNaiveInputList('build-args'),
     buildContexts: await getInputList('build-contexts', true),
     builder: core.getInput('builder'),
     cacheFrom: await getInputList('cache-from', true),
@@ -238,6 +238,12 @@ export async function getInputList(name: string, ignoreComma?: boolean): Promise
   }
 
   return res.filter(item => item).map(pat => pat.trim());
+}
+
+export function getNaiveInputList(name: string): string[] {
+  const input = core.getInput(name);
+  if (input == '') return [];
+  return input.split(/\r?\n/).filter(item => item).map(pat => pat.trim());
 }
 
 export const asyncForEach = async (array, callback) => {
